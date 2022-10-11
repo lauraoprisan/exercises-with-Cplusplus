@@ -1,11 +1,7 @@
 #Task of the exercise
 
-'Create a program that contains a recursion subroutine that calculates and prints the
-members of the Fibonacci read string up to the number specified by the user. The program
-asks that from the user.
-
-The Fibonacci number sequence f (n) is defined as follows:
-If n <0, then the error condition,
-f (0) = 0,
-f (1) = 1 and
-f (n) = f (n-1) + f (n-2).'
+'Make a program with a subroutine that checks a person’s adolescence. Thus, a teenager
+means a person between the ages of 13 and 19. The subroutine has the parameter age
+that the program asks from the user. The subroutine can be of type int () (returns a 'true
+value' of 1 or 0), bool () (returns a true value of true or false), or void () (does not contain a
+return command at all).'
