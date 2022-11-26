@@ -10,8 +10,8 @@ struct RoomInfo {
 };
 
 
-void CheckAvailability(int);
-void welcomeMessage();
+void CheckAvailability(int, RoomInfo[]);
+void welcomeMessage(string);
 
 int main() {
 	const int NUM_ROOMS = 40;
@@ -24,14 +24,14 @@ int main() {
 		rooms[index].number = index + 1;
 	}
 
-	void welcomeMessage();
+	cout << "Welcome to our hotel!" << endl<<endl;
 
 	start:
 
 	cout << "Insert room number: "<<endl;
 	cin >> roomNum;
 
-	CheckAvailability(roomNum);
+	CheckAvailability(roomNum, rooms);
 
 	cout << "How many nights do you want to stay?" << endl;
 	cin >> numOfNights;
@@ -46,69 +46,19 @@ int main() {
 	return 0;
 }
 
-void welcomeMessage() {
-	cout << "Welcome to our hotel!" << endl;
-}
 
-void CheckAvailability(int num) {
-
+void CheckAvailability(int num, RoomInfo rooms[]) {
+	int newNum;
 	if(rooms[num - 1].availability == true) {
-		cout << "You have booked room number " << num <<endl;
+		cout << "You have booked room number " << num <<"."<<endl;
 		rooms[num - 1].availability = false;
 	}
 	else if(rooms[num - 1].availability == false) {
 		cout << "The room you chose is not available. Please select another room!" << endl;
-		cout << "Insert room number: ";
-		cin >> num;
-		CheckAvailability(num);
+		cout << "Insert room number: "<<endl;
+		cin >> newNum;
+		CheckAvailability(newNum,rooms);
 	}
 }
 
 
-
-
-
-/*
-#include <iostream>
-#include <iomanip>
-using namespace std;
-
-struct RoomInfo {
-	int number;
-	bool availability = true;
-	int price = 100;
-};
-
-void CheckAvailability(int);
-
-int main() {
-	const int NUM_ROOMS = 40;
-	RoomInfo rooms[NUM_ROOMS];
-	int index;
-	int num;
-
-	for (index = 0; index < NUM_ROOMS; index++) {
-		rooms[index].number = index + 1;
-	}
-
-	cout << "Insert room number: ";
-	cin >> num;
-	CheckAvailability(num);
-
-
-	return 0;
-}
-
-void CheckAvailability(int num) {
-	if(rooms[num - 1].availability == true) {
-		cout << "You have booked room number " << num;
-		rooms[num - 1].availability = false;
-	}
-	else if(rooms[num - 1].availability == false) {
-		cout << "The room you chose is not available. Please select another room!" << endl;
-		cout << "Insert room number: ";
-		cin >> num;
-		CheckAvailability(num);
-	}
-}
-*/
