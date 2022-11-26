@@ -10,14 +10,15 @@ struct RoomInfo {
 };
 
 
-void CheckAvailability(int, RoomInfo[]);
+void CheckAvailabilityAndBook(int, RoomInfo[]);
 void welcomeMessage(string);
+int askForRoom();
 
 int main() {
 	const int NUM_ROOMS = 40;
 	RoomInfo rooms[NUM_ROOMS];
 	int index;
-	int roomNum, numOfNights;
+	int numOfNights;
 	string choice;
 
 	for (index = 0; index < NUM_ROOMS; index++) {         //assigning numbers to the rooms
@@ -28,10 +29,7 @@ int main() {
 
 	start:
 
-	cout << "Insert room number: "<<endl;
-	cin >> roomNum;
-
-	CheckAvailability(roomNum, rooms);
+	CheckAvailabilityAndBook(askForRoom(), rooms);
 
 	cout << "How many nights do you want to stay?" << endl;
 	cin >> numOfNights;
@@ -47,7 +45,7 @@ int main() {
 }
 
 
-void CheckAvailability(int num, RoomInfo rooms[]) {
+void CheckAvailabilityAndBook(int num, RoomInfo rooms[]) {
 	int newNum;
 	if(rooms[num - 1].availability == true) {
 		cout << "You have booked room number " << num <<"."<<endl;
@@ -57,8 +55,18 @@ void CheckAvailability(int num, RoomInfo rooms[]) {
 		cout << "The room you chose is not available. Please select another room!" << endl;
 		cout << "Insert room number: "<<endl;
 		cin >> newNum;
-		CheckAvailability(newNum,rooms);
+		CheckAvailabilityAndBook(newNum,rooms);
 	}
 }
 
 
+int askForRoom() {
+	int roomNum;
+	cout << "Insert a room number between 1 and 40: ";
+	cin >> roomNum;
+	while (roomNum < 0 || roomNum>40) {
+		cout << "Your number room does not exist. Insert a room number between 1 and 40, please! " << endl;
+		cin >> roomNum;
+	}
+	return roomNum;
+}
