@@ -15,20 +15,21 @@ struct RoomInfo {
 
 
 
-int checkAvailabilityRoomType(int, string, RoomInfo[], int, bool);
-int checkAndBookRoomNumber(string, int, RoomInfo[]);
+int checkAvailabilityRoomType(string, RoomInfo[], int, bool);
 int askAndCheckRoomNumInput(string, int);
 void CheckAvailabilityAndChooseRoom(int, RoomInfo[]);
+int machineChoose(string, int, RoomInfo[]);
 //void welcomeMessage(string);
 
 
 int main() {
 	const int NUM_ROOMS = 40;
 	RoomInfo rooms[NUM_ROOMS];
-	int index, menuChoice, roomChoice, roomNum=0;
+	int index, menuChoice, roomChoice, roomNum=0, methodChoice;
 	bool proceedBooking=true;
 	//int numOfNights;
-	string choice, roomBed;
+	string choice;
+	string roomBed;
 
 
 	for (index = 0; index < NUM_ROOMS / 2; index++) {						//assigning numbers, prices and roomTypes for single rooms
@@ -60,12 +61,32 @@ start:
 		cout << "1. single room" << endl;
 		cout << "2. double room" << endl;
 		cin >> roomChoice;
+		if (roomChoice == 1) {
+			roomBed = "single";
+		}
+		else {
+			roomBed = "double";
+		}
 
-		checkAvailabilityRoomType(roomChoice, roomBed, rooms, NUM_ROOMS, proceedBooking);
+		checkAvailabilityRoomType(roomBed, rooms, NUM_ROOMS, proceedBooking);
 
 		if (proceedBooking) {
-			checkAndBookRoomNumber(roomBed, roomNum, rooms);
-			CheckAvailabilityAndChooseRoom(roomNum, rooms);
+
+			cout << "How do you want to choose your room?" << endl;
+			cout << "1. On my own" << endl;
+			cout << "2. Random room number" << endl;
+			cin >> methodChoice;
+
+			if (methodChoice == 1) {
+				askAndCheckRoomNumInput(roomBed, roomNum);
+				CheckAvailabilityAndChooseRoom(roomNum, rooms);
+			}
+			else {
+				machineChoose(roomBed, roomNum, rooms);
+			}
+
+			//checkAndBookRoomNumber(roomBed, roomNum, rooms);
+			//CheckAvailabilityAndChooseRoom(roomNum, rooms);
 		}
 		else {
 			goto start;  //or idk. smth that will get the user back to menu
@@ -91,16 +112,9 @@ start:
 }
 
 
-	int checkAvailabilityRoomType(int roomTypeNum, string roomBed, RoomInfo rooms[], int size, bool proceedReservation) {
+	int checkAvailabilityRoomType(string roomBed, RoomInfo rooms[], int size, bool proceedReservation) {
 		bool disponibility=false;
 		int choice;
-
-		if (roomTypeNum == 1) {
-			roomBed = "single";
-		}
-		else {
-			roomBed = "double";
-		}
 
 
 		
@@ -135,6 +149,7 @@ start:
 				cin >> choice;
 				if (choice == 1) {
 					proceedReservation = true;
+
 				}
 				else {
 
@@ -153,48 +168,6 @@ start:
 		}
 		else if(disponibility) {
 			proceedReservation = true;
-		}
-		cout << proceedReservation;
-		return 0;
-	}
-
-
-	int checkAndBookRoomNumber(string roomType, int roomNum, RoomInfo rooms[]) {
-		int choice, checkNum;
-		string typeRoom = roomType;
-		int numRoom = roomNum;
-
-		cout << "How do you want to choose your room?" << endl;
-		cout << "1. On my own" << endl;
-		cout << "2. Random room number" << endl;
-		cin >> choice;
-		if (choice == 1) {
-
-			askAndCheckRoomNumInput(typeRoom, numRoom);
-		}
-		else {
-			if (roomType == "single") {
-				while (!roomNum) {
-					checkNum = rand() % 20 + 1;
-					for (int i = 0; i < 20; i++) {
-						if (rooms[i].number == checkNum && rooms[i].availability == true) {
-							roomNum = checkNum;
-						}
-					}
-				}
-			}
-			else {
-				while (!roomNum) {
-					checkNum = rand() % (40 - 21 + 1) + 21;   //rand()%(max-min + 1) + min
-					for (int i = 20; i < 40; i++) {
-						if (rooms[i].number == checkNum && rooms[i].availability == true) {
-							roomNum = checkNum;
-						}
-					}
-				}
-			}
-			cout << "Your chosen room number is: " << roomNum<<".";
-
 		}
 		return 0;
 	}
@@ -216,7 +189,6 @@ start:
 
 
 	int askAndCheckRoomNumInput(string roomType, int roomNum) {
-		cout <<"the room type is" <<roomType;
 		if (roomType == "single") {
 			cout << "Write a room number between 1 and 20, please!" << endl;
 			cin >> roomNum;
@@ -235,4 +207,30 @@ start:
 		}
 
 		return roomNum;
+	}
+
+	int machineChoose(string roomType, int roomNum, RoomInfo rooms[]) {
+		int checkNum;
+		if (roomType == "single") {
+			while (!roomNum) {
+				checkNum = rand() % 20 + 1;
+				for (int i = 0; i < 20; i++) {
+					if (rooms[i].number == checkNum && rooms[i].availability == true) {
+						roomNum = checkNum;
+					}
+				}
+			}
+		}
+		else {
+			while (!roomNum) {
+				checkNum = rand() % (40 - 21 + 1) + 21;   //rand()%(max-min + 1) + min
+				for (int i = 20; i < 40; i++) {
+					if (rooms[i].number == checkNum && rooms[i].availability == true) {
+						roomNum = checkNum;
+					}
+				}
+			}
+		}
+		cout << "Your chosen room number is: " << roomNum << ".";
+		return 0;
 	}
