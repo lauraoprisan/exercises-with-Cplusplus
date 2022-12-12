@@ -23,8 +23,8 @@ int machineChoose(string, int&, RoomInfo[]);
 int calculateAndShowPrice(int, string);
 void showPreliminaryBookingDetails(int, string, int, int, string);
 void bookingConfirmation(int, int, string, int&, RoomInfo[], int);
-void showFinalBookingDetailsByName(string, RoomInfo[], int, bool&);
-void showFinalBookingDetailsById(int, RoomInfo[], int);
+void showFinalBookingDetailsByName(string, RoomInfo[], int, bool&, bool&, int&);
+void showFinalBookingDetailsById(int, RoomInfo[], int, bool&, int&);
 
 
 
@@ -34,8 +34,8 @@ void showFinalBookingDetailsById(int, RoomInfo[], int);
 int main() {
 	const int NUM_ROOMS = 40;
 	RoomInfo rooms[NUM_ROOMS];
-	int index, menuChoice, roomChoice, roomNum = 0, methodChoice, nightsNum, price, bookingConf, bookingId;
-	bool proceedBooking = true, nameDuplicity, roomsAvailable;
+	int index, menuChoice, roomChoice, roomNum = 0, methodChoice, nightsNum, price, bookingConf, bookingId, found;
+	bool proceedBooking = true, nameDuplicity, roomsAvailable, modifyByName, modifyById;
 	//int numOfNights;
 	string choice;
 	string roomBed, name;
@@ -59,8 +59,13 @@ int main() {
 
 start:
 	roomNum = 0;
-	cout << "1.Make a reservation" << endl;
-	cout << "2.Check your reservation" << endl;
+	modifyByName = false;
+	modifyById = false;
+	cout << "1. Make a reservation" << endl;
+	cout << "2. Show prices" << endl;
+	cout << "3. Check your reservation" << endl;
+
+
 	cin >> menuChoice;
 	cout << endl;
 	switch (menuChoice) {
@@ -118,8 +123,9 @@ start:
 		rooms[roomNum - 1].customPrice = price; //storing the final price
 
 		cout << "To continue the booking, write your name, please: ";
-		//getline(cin, name);
-		cin >> name;
+		cin.ignore();
+		getline(cin, name);
+		//cin >> name;
 		showPreliminaryBookingDetails(roomNum, roomBed, nightsNum, price, name);
 		cout << endl;
 		cout << "Do you confirm the booking?" << endl;
@@ -140,25 +146,64 @@ start:
 		
 	}
 	case 2: {
+		cout << "Prices list" << endl << endl;
+		cout << "Single room / night: 100 euros" << endl;
+		cout << "Double room / night: 150 euros" << endl<<endl;
+		cout << "We offer random discounts up to 20%!" << endl;
+		cout << "May the luch be with you!" << endl << endl;
+
+		goto start;
+
+	}
+	case 3: {
 		cout << "Access your reservation: "<<endl;
 		cout << "1. By name" << endl;
 		cout << "2. By booking number" << endl;
 		cin >> methodChoice;
 		if(methodChoice == 1) {
 			cout << "Write your name: ";
-			cin >> name;
-			showFinalBookingDetailsByName(name, rooms, NUM_ROOMS, nameDuplicity);
+			cin.ignore();
+			getline(cin, name);
+			showFinalBookingDetailsByName(name, rooms, NUM_ROOMS, nameDuplicity, modifyByName, found);
 			if (nameDuplicity) {
 				cin >> bookingId;
-				showFinalBookingDetailsById(bookingId, rooms, NUM_ROOMS);
+				showFinalBookingDetailsById(bookingId, rooms, NUM_ROOMS, modifyById, found);
 			}
 
 		}
 		else {
 			cout << "Write your booking number: ";
 			cin >> bookingId;
-			showFinalBookingDetailsById(bookingId, rooms, NUM_ROOMS);
+			showFinalBookingDetailsById(bookingId, rooms, NUM_ROOMS, modifyById, found);
 		}
+
+
+		if (modifyByName || modifyById) {
+			cout << "1. Everything looks great!" << endl;
+			cout << "2. I want to delete my reservation!" << endl;
+			cin >> methodChoice;
+			if (methodChoice == 1) {
+				goto start;
+			}
+			else {
+				cout << "Are you sure?" << endl;
+				cout << "1. No, I want to keep it!" << endl;
+				cout << "2. Yes!" << endl;
+				cin >> methodChoice;
+				if (methodChoice == 2) {
+					rooms[found].availability = true;
+					rooms[found].bookingNum = 0;
+					rooms[found].name = "";
+					cout << "You reservation has been deleted!" << endl;
+				}
+				else {
+					goto start;
+				}
+				
+			}
+		}
+		
+		goto start;
 
 	}
 	}
@@ -384,10 +429,9 @@ void bookingConfirmation(int roomNum, int nights, string name, int &bookingId, R
 }
 
 
-void showFinalBookingDetailsByName(string name, RoomInfo rooms[], int size, bool &nameDuplicity) {
+void showFinalBookingDetailsByName(string name, RoomInfo rooms[], int size, bool &nameDuplicity, bool &modifyByName, int &found) {
 
-
-	//checking name duplicity
+	//checking reservation existence and name duplicity
 	nameDuplicity = false;
 	int nameCopy = 0;
 	for (int i = 0; i < size; i++) {
@@ -396,8 +440,12 @@ void showFinalBookingDetailsByName(string name, RoomInfo rooms[], int size, bool
 		}
 		
 	}
-	if (nameCopy >= 1) {
-		int found = 0;
+	if (nameCopy == 0) {
+		cout << "There is no reservation with this name!"<<endl;
+	}
+	else if (nameCopy ==1) {
+		found = 0;
+		modifyByName = true;
 		for (int i = 0; i < size; i++) {
 			if (rooms[i].name == name) {
 				found = i;
@@ -411,7 +459,7 @@ void showFinalBookingDetailsByName(string name, RoomInfo rooms[], int size, bool
 		cout << "Number of nights: " << rooms[found].nights << endl;
 		cout << "Price: " << rooms[found].customPrice << endl;
 	}
-	else {
+	else  {
 		nameDuplicity = true;
 		cout << "It seems there are at least 2 reservations on the same name" << endl;
 		cout << "To access your reservation write your booking number: " << endl;
@@ -420,18 +468,31 @@ void showFinalBookingDetailsByName(string name, RoomInfo rooms[], int size, bool
 	
 }
 
-void showFinalBookingDetailsById(int bookingNum, RoomInfo rooms[], int size) {
-	int found = 0;
+void showFinalBookingDetailsById(int bookingNum, RoomInfo rooms[], int size, bool &modifyById, int &found) {
+	found = 0;
+
 	for (int i = 0; i < size; i++) {
 		if (rooms[i].bookingNum == bookingNum) {
 			found = i;
 		}
 	}
 
-	cout << "Name: " << rooms[found].name << endl;
-	cout << "Booking number: " << rooms[found].bookingNum << endl;   //I could delete this line
-	cout << "Room number: " << rooms[found].number << endl;
-	cout << "Room type: " << rooms[found].roomType << endl;
-	cout << "Number of nights: " << rooms[found].nights << endl;
-	cout << "Price: " << rooms[found].customPrice << endl;
+	if (found !=0) {
+		modifyById = true;
+		cout << "Name: " << rooms[found].name << endl;
+		cout << "Booking number: " << rooms[found].bookingNum << endl;   //I could delete this line
+		cout << "Room number: " << rooms[found].number << endl;
+		cout << "Room type: " << rooms[found].roomType << endl;
+		cout << "Number of nights: " << rooms[found].nights << endl;
+		cout << "Price: " << rooms[found].customPrice << endl;
+	}
+	else {
+		cout << "There is no reservation with this booking number!" << endl;
+	}
+	
+}
+
+void deleteRevervation() {
+	//select the booking via name or booking id and then set all the object/s properties to 0,true, empty str etc
+	//variables needed: modifyByName, modifyById, 
 }
