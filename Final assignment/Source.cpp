@@ -4,18 +4,20 @@
 #include <cstdlib>
 using namespace std;
 
+
+//struct declaration
 struct RoomInfo {
 	int number;
-	bool availability = true;
+	bool availability;
 	int price;
 	int customPrice;
 	string roomType;
-	int bookingNum=0;
+	int bookingNum;
 	string name;
 	int nights;
 };
 
-
+//Function prototypes
 int checkAvailabilityRoomType(int, string&, RoomInfo[], int, bool&);
 int askAndCheckRoomNumInput(string, int&, int);
 void CheckAvailabilityAndChooseRoom(int&, RoomInfo[]);
@@ -27,50 +29,70 @@ void showFinalBookingDetailsByName(string, RoomInfo[], int, bool&, bool&, int&);
 void showFinalBookingDetailsById(int, RoomInfo[], int, bool&, int&);
 
 
-
-//void welcomeMessage(string);
-
-
 int main() {
-	const int NUM_ROOMS = 40;
-	RoomInfo rooms[NUM_ROOMS];
-	int index, menuChoice, roomChoice, roomNum = 0, methodChoice, nightsNum, price, bookingConf, bookingId, found;
+
+
+
+	const int NUM_ROOMS = 40;   //constant for array size
+	RoomInfo rooms[NUM_ROOMS];  //an array of structures
+	int index, menuChoice, roomNum = 0, nightsNum, price, bookingId, found;
 	bool proceedBooking = true, nameDuplicity, roomsAvailable, modifyByName, modifyById;
-	//int numOfNights;
-	string choice;
 	string roomBed, name;
 
 
-	for (index = 0; index < NUM_ROOMS / 2; index++) {						//assigning numbers, prices and roomTypes for single rooms
+	//assigning numbers, prices, roomTypes for single rooms; setting all single rooms' availability to true and booking Id to 0
+	for (index = 0; index < NUM_ROOMS / 2; index++) {						
 		rooms[index].number = index + 1;
 		rooms[index].price = 100;
 		rooms[index].roomType = "single";
+		rooms[index].availability = true;
+		rooms[index].bookingNum = 0;
+
 	}
 
-	for (index = (NUM_ROOMS / 2); index < NUM_ROOMS; index++) {         ///assigning numbers, prices and roomTypes for double rooms
+	//assigning numbers, prices, roomTypes for double rooms; setting all double rooms' availability to true and booking Id to 0
+	for (index = (NUM_ROOMS / 2); index < NUM_ROOMS; index++) {         
 		rooms[index].number = index + 1;
 		rooms[index].price = 150;
 		rooms[index].roomType = "double";
+		rooms[index].availability = true;
+		rooms[index].bookingNum = 0;
 	}
 
 
+	//welcoming message
+	cout << endl << endl;
 	cout << "Welcome to our hotel!" << endl << endl;
-	cout << "Navigate the menu by choosing numbers of the options!" << endl << endl;
+	cout << "Navigate the menu by choosing numbers of the option!" << endl << endl;
 
-start:
-	roomNum = 0;
+	
+
+start:			//returning point after navigating the menu options
+
+	
+	//resetting roomNum, modifyByName and modifyById each time after returning to start
+	roomNum = 0;								
 	modifyByName = false;
 	modifyById = false;
+	
+	//main menu options
+
 	cout << "1. Make a reservation" << endl;
 	cout << "2. Show prices" << endl;
 	cout << "3. Check your reservation" << endl;
+	cout << "4. Exit" << endl;
 
 
 	cin >> menuChoice;
 	cout << endl;
+
+	//navigating the menu options
 	switch (menuChoice) {
+
+	//Make a reservation option
 	case 1:
 	{	
+		//Checking if there is at least one room available
 		for (int i = 0; i < NUM_ROOMS; i++) {
 			if (rooms[i].availability == true) {
 				roomsAvailable=true;
@@ -81,70 +103,104 @@ start:
 			}
 		}
 	
+		//There are no rooms left - case
 		if (roomsAvailable==false) {
 			cout << "We are all booked, but you are very welcome to come in the near future and check again!" << endl;
 			goto start;
 		}
+
+		//There is at least one more room available - case
 		else {
 
 		cout << "Choose the room type:" << endl;
 		cout << "1. single room" << endl;
 		cout << "2. double room" << endl;
-		cin >> roomChoice;
+		cin >> menuChoice;
 
-		checkAvailabilityRoomType(roomChoice, roomBed, rooms, NUM_ROOMS, proceedBooking);
+
+		//Checking room type availability
+		checkAvailabilityRoomType(menuChoice, roomBed, rooms, NUM_ROOMS, proceedBooking);
+
+		/*Program to execute if the room type chosen by user is available
+		or 
+		if the user agrees to book another available room type (in case there are no more rooms available with chosen room type)
+		*/
 
 		if (proceedBooking) {
 
 			cout << "How do you want to choose your room?" << endl;
 			cout << "1. On my own" << endl;
 			cout << "2. Random room number" << endl;
-			cin >> methodChoice;
+			cin >> menuChoice;
 
-			if (methodChoice == 1) {
+			//Manually chosen room number
+			if (menuChoice == 1) {
+
+				/*
+					asking the room number and checking if the input is valid
+					(For n rooms it has to be between 1 and n / 2 for single rooms and between n / 2 + 1 and n for double rooms)
+				*/
 				askAndCheckRoomNumInput(roomBed, roomNum, NUM_ROOMS);
+
+				//checking if the room number is available; in case it is not, the program asks for another room numbers until the user choose an available number
 				CheckAvailabilityAndChooseRoom(roomNum, rooms);
 			}
-			else {
-				machineChoose(roomBed, roomNum, rooms);
+
+			//Automatically chosen room number
+			else {														
+				machineChoose(roomBed, roomNum, rooms);					//choosing an available room number
 			}
 		}
 
+		/*
+			Program to execute if the room type chosen by user is unavailable
+			and
+			the user does not agree to book another available room type
+		*/
 
 		else {
-			goto start;  //or idk. smth that will get the user back to menu
+			goto start;						//returning at the beginning of the main menu, at the returning point
 		}
 
+		//continuing with the booking (the agreed booking)
 
 		cout << "How many nights do you want to stay?" << endl;
 		cin >> nightsNum;
 
-		price = calculateAndShowPrice(nightsNum, roomBed);
-		rooms[roomNum - 1].customPrice = price; //storing the final price
+	
+
+		price = calculateAndShowPrice(nightsNum, roomBed);				//calculating the final price (with random discount added) and displaying it
+		rooms[roomNum - 1].customPrice = price;							//storing the final price
 
 		cout << "To continue the booking, write your name, please: ";
 		cin.ignore();
 		getline(cin, name);
-		//cin >> name;
-		showPreliminaryBookingDetails(roomNum, roomBed, nightsNum, price, name);
+
+		showPreliminaryBookingDetails(roomNum, roomBed, nightsNum, price, name);           //showing preliminary booking details
 		cout << endl;
+
 		cout << "Do you confirm the booking?" << endl;
 		cout << "1. Yes" << endl;
 		cout << "2. No" << endl;
-		cin >> bookingConf;
+		cin >> menuChoice;
 
-		if (bookingConf == 1) {
-			rooms[roomNum - 1].name = name;
-			bookingConfirmation(roomNum, nightsNum, name, bookingId, rooms, NUM_ROOMS);
+		//booking confirmed
+		if (menuChoice == 1) {
+			rooms[roomNum - 1].name = name;							//storing the name for the booking
+			bookingConfirmation(roomNum, nightsNum, name, bookingId, rooms, NUM_ROOMS);        //generating unique random booking ID, storing booking information and displaying a confimation text
 			cout << endl << endl;
-			goto start;
+			goto start;											//returning at the beginning of the main menu, at the returning point
 		}
+
+		//the user didn't confirm the booking
 		else {
-			goto start;
+			goto start;											//returning at the beginning of the main menu, at the returning point
 		}
 		}
 		
 	}
+
+	//Show prices option
 	case 2: {
 		cout << "Prices list" << endl << endl;
 		cout << "Single room / night: 100 euros" << endl;
@@ -152,80 +208,111 @@ start:
 		cout << "We offer random discounts up to 20%!" << endl;
 		cout << "May the luch be with you!" << endl << endl;
 
-		goto start;
+		goto start;											//returning at the beginning of the main menu, at the returning point
 
 	}
+
+	//Check your reservation option
 	case 3: {
 		cout << "Access your reservation: "<<endl;
 		cout << "1. By name" << endl;
 		cout << "2. By booking number" << endl;
-		cin >> methodChoice;
-		if(methodChoice == 1) {
+		cin >> menuChoice;
+
+		//Accessing reservation by name
+		if(menuChoice == 1) {
 			cout << "Write your name: ";
 			cin.ignore();
 			getline(cin, name);
+
+			/*
+				in case the name only occurs once in the booking records, the program displays all the booking information attached to the name
+				or
+				in case there is no reservation made with that name, the program displays a text informing the user about it
+				or 
+				in case there are multiply reservation with the same name, the variable "nameDuplicity" is assigned the boolean value "true"
+			*/
 			showFinalBookingDetailsByName(name, rooms, NUM_ROOMS, nameDuplicity, modifyByName, found);
+
+			//if there are multiply reservation with the same name, the user is asked to check his reservation via booking ID
 			if (nameDuplicity) {
 				cin >> bookingId;
-				showFinalBookingDetailsById(bookingId, rooms, NUM_ROOMS, modifyById, found);
+				/*
+					in case the booking ID exists, the program displays all the booking information attached to the booking ID
+					or
+					in case there is no reservation made with that booking ID, the program displays a text informing the user about it
+				*/
+				showFinalBookingDetailsById(bookingId, rooms, NUM_ROOMS, modifyById, found);		
 			}
 
 		}
+
+		//Accessing reservation by booking ID
 		else {
 			cout << "Write your booking number: ";
 			cin >> bookingId;
+
+				/*
+					in case the booking ID exists, the program displays all the booking information attached to the booking ID
+					or
+					in case there is no reservation made with that booking ID, the program displays a text informing the user about it
+				*/
 			showFinalBookingDetailsById(bookingId, rooms, NUM_ROOMS, modifyById, found);
 		}
 
-
+		//this programs runs if the user found his reservation
 		if (modifyByName || modifyById) {
 			cout << "1. Everything looks great!" << endl;
 			cout << "2. I want to delete my reservation!" << endl;
-			cin >> methodChoice;
-			if (methodChoice == 1) {
+			cin >> menuChoice;
+
+			//All is good -case
+			if (menuChoice == 1) {
 				goto start;
 			}
+
+			//Delete reservation -case
 			else {
+
+				//Confirmation of deleting the booking
 				cout << "Are you sure?" << endl;
 				cout << "1. No, I want to keep it!" << endl;
 				cout << "2. Yes!" << endl;
-				cin >> methodChoice;
-				if (methodChoice == 2) {
+				cin >> menuChoice;
+
+				//deleting the booking important details and setting the room available again
+				if (menuChoice == 2) {
 					rooms[found].availability = true;
 					rooms[found].bookingNum = 0;
 					rooms[found].name = "";
 					cout << "You reservation has been deleted!" << endl;
 				}
+
+				//User didn't confirm the deleting process
 				else {
-					goto start;
+					goto start;										//returning at the beginning of the main menu, at the returning point
 				}
 				
 			}
 		}
 		
-		goto start;
+		goto start;				//returning at the beginning of the main menu, at the returning point
 
+	}
+
+	//Exit option
+	case 4: {
+		cout << "Thank you for your visit!" << endl;
 	}
 	}
 	
 
 
-	/*
-	CheckAvailabilityAndBook(askForRoom(), rooms);
-
-	cout << "How many nights do you want to stay?" << endl;
-	cin >> numOfNights;
-	cout << "The price for the stay is : " << numOfNights * 100 << " Euro"<< endl;
-	cout << "Do you want to book another room? yes/no" << endl;
-	cin >> choice;
-	if (choice == "yes") {
-		goto start;
-	}
-	else return 0;
-*/
-	
 	return 0;
 }
+
+
+
 /*
 int checkNumber(int num, int &variableToSet ) {
 	int choice;
@@ -243,28 +330,37 @@ int checkNumber(int num, int &variableToSet ) {
 	return 0;
 }
 */
-int checkAvailabilityRoomType(int roomChoice, string& roomBed, RoomInfo rooms[], int size, bool &proceedReservation) {
-	bool disponibility = false;
+
+
+/*
+	program that checks the room type availability; 
+	in case the chosen room type it is not available and there is at least an available room with the other room type, it informs the user and let's him choose if he wants this option
+*/
+int checkAvailabilityRoomType(int menuChoice, string& roomBed, RoomInfo rooms[], int size, bool &proceedReservation) {
+	bool disponibility = false;              
 	int choice;
 
-	if (roomChoice == 1) {
+	//user chooses the room type
+	if (menuChoice == 1) {
 		roomBed = "single";
 	}
 	else {
 		roomBed = "double";
 	}
 
-
+	//checking if there are available rooms of the chosen room type
 	for (int i = 0; i < size; i++) {
 		if (rooms[i].roomType == roomBed && rooms[i].availability == true) {
 			disponibility = true;
 		}
 	}
 
-
+	//program that runs if there are no available rooms of the chosen room type
 	if (!disponibility) {
 		cout << "Unfortunately, we don't have " << roomBed << " rooms available." << endl;
 
+
+		//changing the value of the chosen room type with the other one
 		if (roomBed == "single") {
 			roomBed = "double";
 		}
@@ -272,12 +368,14 @@ int checkAvailabilityRoomType(int roomChoice, string& roomBed, RoomInfo rooms[],
 			roomBed = "single";
 		}
 
+		//checking if there are available rooms of the other room type
 		for (int i = 0; i < size; i++) {
 			if (rooms[i].roomType == roomBed && rooms[i].availability == true) {
 				disponibility = true;
 			}
 		}
 
+		//program that runs if there are available rooms of the other room type
 		if (disponibility) {
 			cout << "However, we have some " << roomBed << " rooms available." << endl;
 			cout << "Do you want to book one?" << endl;
@@ -295,23 +393,18 @@ int checkAvailabilityRoomType(int roomChoice, string& roomBed, RoomInfo rooms[],
 				
 			}
 		}
-		/*
-		else {
-			proceedReservation = false;
-			cout << "We have no other option for the room at the moment, but you are very welcome to come in the near future and check again!" << endl;
-			cout << "Have a great day!";
-		}
-		*/
+
 	}
+	//program that runs if there are available rooms of the chosen room type
 	else if (disponibility) {
 		proceedReservation = true;
 	}
 	return 0;
 }
 
-
+//program that checks if the room number is available; in case it is not, the program asks for another room numbers until the user choose an available number
 void CheckAvailabilityAndChooseRoom(int &num, RoomInfo rooms[]) {
-	//int newNum;
+
 	if (rooms[num - 1].availability == true) {
 		cout << "You have booked room number " << num << "." << endl;
 		rooms[num - 1].availability = false;
@@ -320,14 +413,19 @@ void CheckAvailabilityAndChooseRoom(int &num, RoomInfo rooms[]) {
 		cout << "The room you chose is not available. Please select another room!" << endl;
 		cout << "Insert room number: " << endl;
 		cin >> num;
-		CheckAvailabilityAndChooseRoom(num, rooms);
+		CheckAvailabilityAndChooseRoom(num, rooms);        
 	}
 
 	
 }
 
-
+/*
+	Program that asks for room number and checks if the input is valid
+	(For n rooms it has to be between 1 and n / 2 for single rooms and between n / 2 + 1 and n for double rooms)
+*/
 int askAndCheckRoomNumInput(string roomType, int &roomNum, int size) {
+
+	//for single rooms
 	if (roomType == "single") {
 		cout << "Write a room number between 1 and "<<size/2<<", please!" << endl;
 		cin >> roomNum;
@@ -336,6 +434,8 @@ int askAndCheckRoomNumInput(string roomType, int &roomNum, int size) {
 			cin >> roomNum;
 		}
 	}
+
+	//for double rooms
 	else if (roomType == "double") {
 		cout << "Write a room number between "<<size/2+1<<" and "<<size<<", please!" << endl;
 		cin >> roomNum;
@@ -348,21 +448,34 @@ int askAndCheckRoomNumInput(string roomType, int &roomNum, int size) {
 	return 0;
 }
 
+//Program that randomly chooses an available room number
 int machineChoose(string roomType, int &roomNum, RoomInfo rooms[]) {
 	int checkNum;
+
+	//for single rooms
 	if (roomType == "single") {
+
+		//program that runs until an available room number is found
 		while (!roomNum) {
-			checkNum = rand() % 20 + 1; //the same random num every time
-			for (int i = 0; i < 20; i++) {
+			checkNum = rand() % 20 + 1;						//random room number between 1 and 20 generated and temporarly stored for following checks
+			
+			//checking if the random room number is available and if it is, the room number is stored
+			for (int i = 0; i < 20; i++) {				
 				if (rooms[i].number == checkNum && rooms[i].availability == true) {
 					roomNum = checkNum;
 				}
 			}
 		}
 	}
+
+	//for double rooms
 	else {
+
+		//program that runs until an available room number is found
 		while (!roomNum) {
-			checkNum = rand() % (40 - 21 + 1) + 21;   //rand()%(max-min + 1) + min
+			checkNum = rand() % (40 - 21 + 1) + 21;  //random room number between 21 and 40 generated and temporarly stored for following checks
+
+			//checking if the random room number is available and if it is, the room number is stored
 			for (int i = 20; i < 40; i++) {
 				if (rooms[i].number == checkNum && rooms[i].availability == true) {
 					roomNum = checkNum;
@@ -374,10 +487,11 @@ int machineChoose(string roomType, int &roomNum, RoomInfo rooms[]) {
 	return 0;
 }
 
+//Program that calculates the final price (with random discount added) and displaying it
 int calculateAndShowPrice(int nights, string roomType) {
 	int price, discount[3]={0, 10, 20}, discountOffer=0;
 
-	discountOffer = rand() % 3;
+	discountOffer = rand() % 3;          //randomly choosing a discount
 	
 	if (roomType == "single") {
 		price =  (100 - discount[discountOffer]) * nights * 100 / 100;
@@ -393,6 +507,7 @@ int calculateAndShowPrice(int nights, string roomType) {
 	return price;
 }
 
+//Program that displays the preliminary booking details
 void showPreliminaryBookingDetails(int roomNum, string roomBed, int nights, int price, string name) {
 	cout << "Name: " << name << endl;
 	cout << "Room number: " << roomNum<<endl;
@@ -401,13 +516,15 @@ void showPreliminaryBookingDetails(int roomNum, string roomBed, int nights, int 
 	cout << "Price: " << price << endl;
 }
 
+
+//Program that generates a unique random booking number, storing all booking information and displaying a confirmation text
 void bookingConfirmation(int roomNum, int nights, string name, int &bookingId, RoomInfo rooms[], int size) { 
 	
 	//choosing a different random booking number
 	bool foundIdCopy = false;
 
 	while (rooms[roomNum - 1].bookingNum==0) {
-		bookingId = rand() % 99999 + 10000;
+		bookingId = rand() % 99999 + 10000;                //generating a random number between 10000 and 99999
 		for (int i = 0; i < size; i++) {
 			if (rooms[i].bookingNum == bookingId) {
 				bool foundIdCopy = true;
@@ -419,33 +536,45 @@ void bookingConfirmation(int roomNum, int nights, string name, int &bookingId, R
 		}
 	}
 
-	
-	rooms[roomNum - 1].availability = false;
-	rooms[roomNum - 1].nights = nights;
+
+	rooms[roomNum - 1].availability = false;    //setting the room unavailable
+	rooms[roomNum - 1].nights = nights;			//storing booking info
 
 
 	cout << "Thank you, " << name << "!" << endl;
 	cout << "Your booking number is: " << bookingId << "." << endl<<endl;
 }
 
-
+/*
+	Description of the following function:
+		in case the name only occurs once in the booking records, the program displays all the booking information attached to the name
+		or
+		in case there is no reservation made with that name, the program displays a text informing the user about it
+		or
+		in case there are multiply reservation with the same name, the variable "nameDuplicity" is assigned the boolean value "true"
+*/
 void showFinalBookingDetailsByName(string name, RoomInfo rooms[], int size, bool &nameDuplicity, bool &modifyByName, int &found) {
 
 	//checking reservation existence and name duplicity
 	nameDuplicity = false;
 	int nameCopy = 0;
+
 	for (int i = 0; i < size; i++) {
 		if (rooms[i].name == name) {
 			nameCopy++;
 		}
 		
 	}
+
+	//program that runs in case there is no reservation with the inserted name
 	if (nameCopy == 0) {
 		cout << "There is no reservation with this name!"<<endl;
 	}
+
+	//program that runs if there is one reservation with the inserted name
 	else if (nameCopy ==1) {
 		found = 0;
-		modifyByName = true;
+		modifyByName = true;										//this variable is used in order to make deleting the booking possible
 		for (int i = 0; i < size; i++) {
 			if (rooms[i].name == name) {
 				found = i;
@@ -459,15 +588,24 @@ void showFinalBookingDetailsByName(string name, RoomInfo rooms[], int size, bool
 		cout << "Number of nights: " << rooms[found].nights << endl;
 		cout << "Price: " << rooms[found].customPrice << endl;
 	}
+
+	//program that runs if there are multiple reservations with the same name
 	else  {
 		nameDuplicity = true;
-		cout << "It seems there are at least 2 reservations on the same name" << endl;
+		cout << "It seems there are at least 2 reservations with the same name" << endl;
 		cout << "To access your reservation write your booking number: " << endl;
 	}
 
 	
 }
 
+
+/*
+	Description of the following program:
+		in case the booking ID exists, the program displays all the booking information attached to the booking ID
+		or
+		in case there is no reservation made with that booking ID, the program displays a text informing the user about it
+*/
 void showFinalBookingDetailsById(int bookingNum, RoomInfo rooms[], int size, bool &modifyById, int &found) {
 	found = 0;
 
@@ -478,9 +616,8 @@ void showFinalBookingDetailsById(int bookingNum, RoomInfo rooms[], int size, boo
 	}
 
 	if (found !=0) {
-		modifyById = true;
+		modifyById = true;							//this variable is used in order to make deleting the booking possible
 		cout << "Name: " << rooms[found].name << endl;
-		cout << "Booking number: " << rooms[found].bookingNum << endl;   //I could delete this line
 		cout << "Room number: " << rooms[found].number << endl;
 		cout << "Room type: " << rooms[found].roomType << endl;
 		cout << "Number of nights: " << rooms[found].nights << endl;
@@ -490,9 +627,4 @@ void showFinalBookingDetailsById(int bookingNum, RoomInfo rooms[], int size, boo
 		cout << "There is no reservation with this booking number!" << endl;
 	}
 	
-}
-
-void deleteRevervation() {
-	//select the booking via name or booking id and then set all the object/s properties to 0,true, empty str etc
-	//variables needed: modifyByName, modifyById, 
 }
