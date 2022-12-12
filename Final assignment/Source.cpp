@@ -105,22 +105,24 @@ start:			//returning point after navigating the menu options
 	
 		//There are no rooms left - case
 		if (roomsAvailable==false) {
+			cout << endl << endl << "------------------------------------------------------------" << endl<<endl;
 			cout << "We are all booked, but you are very welcome to come in the near future and check again!" << endl;
+			cout << endl << endl << "------------------------------------------------------------" << endl << endl;
 			goto start;
 		}
 
 		//There is at least one more room available - case
 		else {
-
-		cout << "Choose the room type:" << endl;
-		cout << "1. single room" << endl;
-		cout << "2. double room" << endl;
-		cin >> menuChoice;
+			cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
+			cout << "Choose the room type:" << endl;
+			cout << "1. single room" << endl;
+			cout << "2. double room" << endl;
+			cin >> menuChoice;
 
 
 		//Checking room type availability
 		checkAvailabilityRoomType(menuChoice, roomBed, rooms, NUM_ROOMS, proceedBooking);
-
+		cout << endl <<endl<< "------------------------------------------------------------" << endl<<endl;
 		/*Program to execute if the room type chosen by user is available
 		or 
 		if the user agrees to book another available room type (in case there are no more rooms available with chosen room type)
@@ -140,15 +142,20 @@ start:			//returning point after navigating the menu options
 					asking the room number and checking if the input is valid
 					(For n rooms it has to be between 1 and n / 2 for single rooms and between n / 2 + 1 and n for double rooms)
 				*/
+				cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 				askAndCheckRoomNumInput(roomBed, roomNum, NUM_ROOMS);
+				cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 
 				//checking if the room number is available; in case it is not, the program asks for another room numbers until the user choose an available number
 				CheckAvailabilityAndChooseRoom(roomNum, rooms);
+				cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 			}
 
 			//Automatically chosen room number
-			else {														
+			else {	
+				cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 				machineChoose(roomBed, roomNum, rooms);					//choosing an available room number
+				cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 			}
 		}
 
@@ -168,27 +175,30 @@ start:			//returning point after navigating the menu options
 		cin >> nightsNum;
 
 	
-
-		price = calculateAndShowPrice(nightsNum, roomBed);				//calculating the final price (with random discount added) and displaying it
+		cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
+		price = calculateAndShowPrice(nightsNum, roomBed);       //calculating the final price (with random discount added) and displaying it
 		rooms[roomNum - 1].customPrice = price;							//storing the final price
 
 		cout << "To continue the booking, write your name, please: ";
 		cin.ignore();
 		getline(cin, name);
 
+		cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 		showPreliminaryBookingDetails(roomNum, roomBed, nightsNum, price, name);           //showing preliminary booking details
-		cout << endl;
+		cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
+	
 
 		cout << "Do you confirm the booking?" << endl;
 		cout << "1. Yes" << endl;
 		cout << "2. No" << endl;
 		cin >> menuChoice;
 
+		cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 		//booking confirmed
 		if (menuChoice == 1) {
 			rooms[roomNum - 1].name = name;							//storing the name for the booking
 			bookingConfirmation(roomNum, nightsNum, name, bookingId, rooms, NUM_ROOMS);        //generating unique random booking ID, storing booking information and displaying a confimation text
-			cout << endl << endl;
+			cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 			goto start;											//returning at the beginning of the main menu, at the returning point
 		}
 
@@ -202,23 +212,26 @@ start:			//returning point after navigating the menu options
 
 	//Show prices option
 	case 2: {
+		cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 		cout << "Prices list" << endl << endl;
 		cout << "Single room / night: 100 euros" << endl;
 		cout << "Double room / night: 150 euros" << endl<<endl;
 		cout << "We offer random discounts up to 20%!" << endl;
-		cout << "May the luch be with you!" << endl << endl;
-
+		cout << "May the luck be with you!" << endl;
+		cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 		goto start;											//returning at the beginning of the main menu, at the returning point
 
 	}
 
 	//Check your reservation option
 	case 3: {
+		cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 		cout << "Access your reservation: "<<endl;
 		cout << "1. By name" << endl;
 		cout << "2. By booking number" << endl;
 		cin >> menuChoice;
 
+		cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 		//Accessing reservation by name
 		if(menuChoice == 1) {
 			cout << "Write your name: ";
@@ -232,8 +245,8 @@ start:			//returning point after navigating the menu options
 				or 
 				in case there are multiply reservation with the same name, the variable "nameDuplicity" is assigned the boolean value "true"
 			*/
+			cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 			showFinalBookingDetailsByName(name, rooms, NUM_ROOMS, nameDuplicity, modifyByName, found);
-
 			//if there are multiply reservation with the same name, the user is asked to check his reservation via booking ID
 			if (nameDuplicity) {
 				cin >> bookingId;
@@ -242,13 +255,16 @@ start:			//returning point after navigating the menu options
 					or
 					in case there is no reservation made with that booking ID, the program displays a text informing the user about it
 				*/
-				showFinalBookingDetailsById(bookingId, rooms, NUM_ROOMS, modifyById, found);		
+				cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
+				showFinalBookingDetailsById(bookingId, rooms, NUM_ROOMS, modifyById, found);	
+				cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 			}
 
 		}
 
 		//Accessing reservation by booking ID
 		else {
+			cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 			cout << "Write your booking number: ";
 			cin >> bookingId;
 
@@ -257,7 +273,9 @@ start:			//returning point after navigating the menu options
 					or
 					in case there is no reservation made with that booking ID, the program displays a text informing the user about it
 				*/
+			cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 			showFinalBookingDetailsById(bookingId, rooms, NUM_ROOMS, modifyById, found);
+			cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 		}
 
 		//this programs runs if the user found his reservation
@@ -266,6 +284,7 @@ start:			//returning point after navigating the menu options
 			cout << "2. I want to delete my reservation!" << endl;
 			cin >> menuChoice;
 
+			cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 			//All is good -case
 			if (menuChoice == 1) {
 				goto start;
@@ -280,12 +299,15 @@ start:			//returning point after navigating the menu options
 				cout << "2. Yes!" << endl;
 				cin >> menuChoice;
 
+				cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
+
 				//deleting the booking important details and setting the room available again
 				if (menuChoice == 2) {
 					rooms[found].availability = true;
 					rooms[found].bookingNum = 0;
 					rooms[found].name = "";
 					cout << "You reservation has been deleted!" << endl;
+					cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 				}
 
 				//User didn't confirm the deleting process
@@ -302,6 +324,7 @@ start:			//returning point after navigating the menu options
 
 	//Exit option
 	case 4: {
+		cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 		cout << "Thank you for your visit!" << endl;
 	}
 	}
@@ -332,6 +355,15 @@ int checkNumber(int num, int &variableToSet ) {
 */
 
 
+
+
+
+
+
+
+
+
+
 /*
 	program that checks the room type availability; 
 	in case the chosen room type it is not available and there is at least an available room with the other room type, it informs the user and let's him choose if he wants this option
@@ -357,7 +389,9 @@ int checkAvailabilityRoomType(int menuChoice, string& roomBed, RoomInfo rooms[],
 
 	//program that runs if there are no available rooms of the chosen room type
 	if (!disponibility) {
+		cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 		cout << "Unfortunately, we don't have " << roomBed << " rooms available." << endl;
+
 
 
 		//changing the value of the chosen room type with the other one
@@ -377,14 +411,13 @@ int checkAvailabilityRoomType(int menuChoice, string& roomBed, RoomInfo rooms[],
 
 		//program that runs if there are available rooms of the other room type
 		if (disponibility) {
-			cout << "However, we have some " << roomBed << " rooms available." << endl;
+			cout << endl << "However, we have some " << roomBed << " rooms available." << endl;
 			cout << "Do you want to book one?" << endl;
 			cout << "1. Yes" << endl;
 			cout << "2. No" << endl;
 			cin >> choice;
 			if (choice == 1) {
 				proceedReservation = true;
-
 			}
 			else {
 
@@ -509,6 +542,7 @@ int calculateAndShowPrice(int nights, string roomType) {
 
 //Program that displays the preliminary booking details
 void showPreliminaryBookingDetails(int roomNum, string roomBed, int nights, int price, string name) {
+	cout << "Booking details: " << endl << endl;
 	cout << "Name: " << name << endl;
 	cout << "Room number: " << roomNum<<endl;
 	cout << "Room type: " << roomBed << endl;
