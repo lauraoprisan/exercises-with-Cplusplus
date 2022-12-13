@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <string>
 #include <cstdlib>
+#include <time.h>
 using namespace std;
 
 
@@ -21,19 +22,20 @@ struct RoomInfo {
 int checkAvailabilityRoomType(int, string&, RoomInfo[], int, bool&);
 int askAndCheckRoomNumInput(string, int&, int);
 void CheckAvailabilityAndChooseRoom(int&, RoomInfo[]);
-int machineChoose(string, int&, RoomInfo[]);
+int machineChoose(string, int&, RoomInfo[], int);
 int calculateAndShowPrice(int, string);
 void showPreliminaryBookingDetails(int, string, int, int, string);
 void bookingConfirmation(int, int, string, int&, RoomInfo[], int);
 void showFinalBookingDetailsByName(string, RoomInfo[], int, bool&, bool&, int&);
 void showFinalBookingDetailsById(int, RoomInfo[], int, bool&, int&);
+void inputCheck(int&);
 
 
 int main() {
 
 
 
-	const int NUM_ROOMS = 40;   //constant for array size
+	const int NUM_ROOMS = 4;   //constant for array size
 	RoomInfo rooms[NUM_ROOMS];  //an array of structures
 	int index, menuChoice, roomNum = 0, nightsNum, price, bookingId, found;
 	bool proceedBooking = true, nameDuplicity, roomsAvailable, modifyByName, modifyById;
@@ -84,6 +86,14 @@ start:			//returning point after navigating the menu options
 
 
 	cin >> menuChoice;
+
+	//input check. it needs to be an integer, between 1 and 4
+	while (cin.fail() || menuChoice < 1 || menuChoice>4) {
+		cout << "You can select either 1, 2, 3 or 4. Please, try again!" << endl;
+		cin.clear();
+		cin.ignore(256, '\n');
+		cin >> menuChoice;
+	}
 	cout << endl;
 
 	//navigating the menu options
@@ -119,6 +129,9 @@ start:			//returning point after navigating the menu options
 			cout << "2. double room" << endl;
 			cin >> menuChoice;
 
+			//input check. it needs to be an integer (1 or 2)
+			inputCheck(menuChoice);
+
 
 		//Checking room type availability
 		checkAvailabilityRoomType(menuChoice, roomBed, rooms, NUM_ROOMS, proceedBooking);
@@ -134,6 +147,8 @@ start:			//returning point after navigating the menu options
 			cout << "1. On my own" << endl;
 			cout << "2. Random room number" << endl;
 			cin >> menuChoice;
+			//input check. it needs to be an integer (1 or 2)
+			inputCheck(menuChoice);
 
 			//Manually chosen room number
 			if (menuChoice == 1) {
@@ -154,7 +169,7 @@ start:			//returning point after navigating the menu options
 			//Automatically chosen room number
 			else {	
 				cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
-				machineChoose(roomBed, roomNum, rooms);					//choosing an available room number
+				machineChoose(roomBed, roomNum, rooms, NUM_ROOMS);					//choosing an available room number
 				cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 			}
 		}
@@ -173,6 +188,13 @@ start:			//returning point after navigating the menu options
 
 		cout << "How many nights do you want to stay?" << endl;
 		cin >> nightsNum;
+		//input check. it needs to be an integer
+		while (cin.fail()) {
+			cout << "Please, use an integer!" << endl;
+			cin.clear();
+			cin.ignore(256, '\n');
+			cin >> menuChoice;
+		}
 
 	
 		cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
@@ -183,6 +205,8 @@ start:			//returning point after navigating the menu options
 		cin.ignore();
 		getline(cin, name);
 
+
+
 		cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 		showPreliminaryBookingDetails(roomNum, roomBed, nightsNum, price, name);           //showing preliminary booking details
 		cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
@@ -192,6 +216,9 @@ start:			//returning point after navigating the menu options
 		cout << "1. Yes" << endl;
 		cout << "2. No" << endl;
 		cin >> menuChoice;
+
+		//input check. it needs to be an integer (1 or 2)
+		inputCheck(menuChoice);
 
 		cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 		//booking confirmed
@@ -231,12 +258,16 @@ start:			//returning point after navigating the menu options
 		cout << "2. By booking number" << endl;
 		cin >> menuChoice;
 
+		//input check. it needs to be an integer (1 or 2)
+		inputCheck(menuChoice);
+
 		cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 		//Accessing reservation by name
 		if(menuChoice == 1) {
 			cout << "Write your name: ";
 			cin.ignore();
 			getline(cin, name);
+
 
 			/*
 				in case the name only occurs once in the booking records, the program displays all the booking information attached to the name
@@ -250,6 +281,15 @@ start:			//returning point after navigating the menu options
 			//if there are multiply reservation with the same name, the user is asked to check his reservation via booking ID
 			if (nameDuplicity) {
 				cin >> bookingId;
+
+				//input check. it needs to be an integer, between 10000 and 99999
+				while (cin.fail() || menuChoice < 10000 || menuChoice>99999) {
+					cout << "You can select either 1, 2, 3 or 4. Please, try again!" << endl;
+					cin.clear();
+					cin.ignore(256, '\n');
+					cin >> bookingId;
+				}
+				
 				/*
 					in case the booking ID exists, the program displays all the booking information attached to the booking ID
 					or
@@ -268,6 +308,14 @@ start:			//returning point after navigating the menu options
 			cout << "Write your booking number: ";
 			cin >> bookingId;
 
+			//input check. it needs to be an integer, between 10000 and 99999
+			while (cin.fail() || menuChoice < 10000 || menuChoice>99999) {
+				cout << "You can select either 1, 2, 3 or 4. Please, try again!" << endl;
+				cin.clear();
+				cin.ignore(256, '\n');
+				cin >> bookingId;
+			}
+
 				/*
 					in case the booking ID exists, the program displays all the booking information attached to the booking ID
 					or
@@ -284,6 +332,9 @@ start:			//returning point after navigating the menu options
 			cout << "2. I want to delete my reservation!" << endl;
 			cin >> menuChoice;
 
+			//input check. it needs to be an integer (1 or 2)
+			inputCheck(menuChoice);
+
 			cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 			//All is good -case
 			if (menuChoice == 1) {
@@ -298,6 +349,9 @@ start:			//returning point after navigating the menu options
 				cout << "1. No, I want to keep it!" << endl;
 				cout << "2. Yes!" << endl;
 				cin >> menuChoice;
+
+				//input check. it needs to be an integer (1 or 2)
+				inputCheck(menuChoice);
 
 				cout << endl<<endl<< "------------------------------------------------------------" << endl<<endl;
 
@@ -333,31 +387,6 @@ start:			//returning point after navigating the menu options
 
 	return 0;
 }
-
-
-
-/*
-int checkNumber(int num, int &variableToSet ) {
-	int choice;
-	bool correct = false;
-	while (correct == false) {
-		if (isdigit(num) == true) {
-			variableToSet = num;
-			correct = true;
-		}
-		else {
-			cout << "Write a number, please!" << endl;
-			cin >> choice;
-		}
-	}
-	return 0;
-}
-*/
-
-
-
-
-
 
 
 
@@ -416,6 +445,15 @@ int checkAvailabilityRoomType(int menuChoice, string& roomBed, RoomInfo rooms[],
 			cout << "1. Yes" << endl;
 			cout << "2. No" << endl;
 			cin >> choice;
+
+			//input check. it needs to be an integer (1 or 2)
+			while (cin.fail() || choice < 1 || choice>4) {
+				cout << "You can select either 1 or 2. Please, try again!" << endl;
+				cin.clear();
+				cin.ignore(256, '\n');
+				cin >> choice;
+			}
+
 			if (choice == 1) {
 				proceedReservation = true;
 			}
@@ -460,20 +498,29 @@ int askAndCheckRoomNumInput(string roomType, int &roomNum, int size) {
 
 	//for single rooms
 	if (roomType == "single") {
-		cout << "Write a room number between 1 and "<<size/2<<", please!" << endl;
+		cout << "Choose a room number between 1 and "<<size/2<<", please!" << endl;
 		cin >> roomNum;
-		while (roomNum < 1 || roomNum>size/2) {
+
+		//input check. it needs to be an integer  between 1 and n / 2
+		while (cin.fail() || roomNum < 1 || roomNum>size / 2) {
 			cout << "Choose a room number between 1 and " << size / 2 << ", please!" << endl;
+			cin.clear();
+			cin.ignore(256, '\n');
 			cin >> roomNum;
 		}
 	}
 
+
 	//for double rooms
 	else if (roomType == "double") {
-		cout << "Write a room number between "<<size/2+1<<" and "<<size<<", please!" << endl;
+		cout << "Choose a room number between "<<size/2+1<<" and "<<size<<", please!" << endl;
 		cin >> roomNum;
-		while (roomNum < size / 2 + 1 || roomNum>size) {
+
+		//input check. it needs to be an integer between n / 2 + 1 and n for double rooms
+		while (cin.fail() || roomNum < size / 2 + 1 || roomNum>size) {
 			cout << "Choose a room number between " << size / 2 + 1 << " and " << size << ", please!" << endl;
+			cin.clear();
+			cin.ignore(256, '\n');
 			cin >> roomNum;
 		}
 	}
@@ -482,7 +529,7 @@ int askAndCheckRoomNumInput(string roomType, int &roomNum, int size) {
 }
 
 //Program that randomly chooses an available room number
-int machineChoose(string roomType, int &roomNum, RoomInfo rooms[]) {
+int machineChoose(string roomType, int &roomNum, RoomInfo rooms[], int size) {
 	int checkNum;
 
 	//for single rooms
@@ -490,10 +537,10 @@ int machineChoose(string roomType, int &roomNum, RoomInfo rooms[]) {
 
 		//program that runs until an available room number is found
 		while (!roomNum) {
-			checkNum = rand() % 20 + 1;						//random room number between 1 and 20 generated and temporarly stored for following checks
+			checkNum = rand() % size/2 + 1;	  				//random room number between 1 and the total of single rooms (half of the total rooms) generated and temporarly stored for following checks
 			
 			//checking if the random room number is available and if it is, the room number is stored
-			for (int i = 0; i < 20; i++) {				
+			for (int i = 0; i < size/2; i++) {				
 				if (rooms[i].number == checkNum && rooms[i].availability == true) {
 					roomNum = checkNum;
 				}
@@ -506,10 +553,10 @@ int machineChoose(string roomType, int &roomNum, RoomInfo rooms[]) {
 
 		//program that runs until an available room number is found
 		while (!roomNum) {
-			checkNum = rand() % (40 - 21 + 1) + 21;  //random room number between 21 and 40 generated and temporarly stored for following checks
+			checkNum = rand() % (size - (size/2+1) + 1) + (size/2+1);  //random room number between total rooms/2 and total rooms generated and temporarly stored for following checks
 
 			//checking if the random room number is available and if it is, the room number is stored
-			for (int i = 20; i < 40; i++) {
+			for (int i = size/2; i < size; i++) {
 				if (rooms[i].number == checkNum && rooms[i].availability == true) {
 					roomNum = checkNum;
 				}
@@ -603,6 +650,7 @@ void showFinalBookingDetailsByName(string name, RoomInfo rooms[], int size, bool
 	//program that runs in case there is no reservation with the inserted name
 	if (nameCopy == 0) {
 		cout << "There is no reservation with this name!"<<endl;
+		cout << endl << endl << "------------------------------------------------------------" << endl << endl;
 	}
 
 	//program that runs if there is one reservation with the inserted name
@@ -661,4 +709,13 @@ void showFinalBookingDetailsById(int bookingNum, RoomInfo rooms[], int size, boo
 		cout << "There is no reservation with this booking number!" << endl;
 	}
 	
+}
+
+void inputCheck(int &choice) {
+	while (cin.fail() || choice < 1 || choice>2) {
+		cout << "You can select either 1 or 2. Please, try again!" << endl;
+		cin.clear();
+		cin.ignore(256, '\n');
+		cin >> choice;
+	}
 }
