@@ -282,13 +282,6 @@ start:			//returning point after navigating the menu options
 			if (nameDuplicity) {
 				cin >> bookingId;
 
-				//input check. it needs to be an integer, between 10000 and 99999
-				while (cin.fail() || menuChoice < 10000 || menuChoice>99999) {
-					cout << "You can select either 1, 2, 3 or 4. Please, try again!" << endl;
-					cin.clear();
-					cin.ignore(256, '\n');
-					cin >> bookingId;
-				}
 				
 				/*
 					in case the booking ID exists, the program displays all the booking information attached to the booking ID
@@ -308,13 +301,6 @@ start:			//returning point after navigating the menu options
 			cout << "Write your booking number: ";
 			cin >> bookingId;
 
-			//input check. it needs to be an integer, between 10000 and 99999
-			while (cin.fail() || menuChoice < 10000 || menuChoice>99999) {
-				cout << "You can select either 1, 2, 3 or 4. Please, try again!" << endl;
-				cin.clear();
-				cin.ignore(256, '\n');
-				cin >> bookingId;
-			}
 
 				/*
 					in case the booking ID exists, the program displays all the booking information attached to the booking ID
@@ -328,6 +314,7 @@ start:			//returning point after navigating the menu options
 
 		//this programs runs if the user found his reservation
 		if (modifyByName || modifyById) {
+			cout << endl << endl << "------------------------------------------------------------" << endl << endl;
 			cout << "1. Everything looks great!" << endl;
 			cout << "2. I want to delete my reservation!" << endl;
 			cin >> menuChoice;
@@ -674,7 +661,7 @@ void showFinalBookingDetailsByName(string name, RoomInfo rooms[], int size, bool
 	//program that runs if there are multiple reservations with the same name
 	else  {
 		nameDuplicity = true;
-		cout << "It seems there are at least 2 reservations with the same name" << endl;
+		cout << "It seems there are at least 2 reservations with the same name." << endl;
 		cout << "To access your reservation write your booking number: " << endl;
 	}
 
@@ -689,7 +676,7 @@ void showFinalBookingDetailsByName(string name, RoomInfo rooms[], int size, bool
 		in case there is no reservation made with that booking ID, the program displays a text informing the user about it
 */
 void showFinalBookingDetailsById(int bookingNum, RoomInfo rooms[], int size, bool &modifyById, int &found) {
-	found = 0;
+	found = -1;
 
 	for (int i = 0; i < size; i++) {
 		if (rooms[i].bookingNum == bookingNum) {
@@ -697,7 +684,7 @@ void showFinalBookingDetailsById(int bookingNum, RoomInfo rooms[], int size, boo
 		}
 	}
 
-	if (found !=0) {
+	if (found >=0) {
 		modifyById = true;							//this variable is used in order to make deleting the booking possible
 		cout << "Name: " << rooms[found].name << endl;
 		cout << "Room number: " << rooms[found].number << endl;
