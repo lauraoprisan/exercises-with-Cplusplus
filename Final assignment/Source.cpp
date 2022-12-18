@@ -251,7 +251,6 @@ start:			//returning point after navigating the menu options
 		cout << "Single room / night: 100 euros" << endl;
 		cout << "Double room / night: 150 euros" << endl << endl;
 		cout << "We offer random discounts up to 20%!" << endl;
-		cout << "May the luck be with you!" << endl;
 		cout << endl << endl << "------------------------------------------------------------" << endl << endl;
 		goto start;											//returning at the beginning of the main menu, at the returning point
 
